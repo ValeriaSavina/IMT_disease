@@ -13,12 +13,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 
-def predictProba(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia):
-    data = np.array([[sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia]])
+def predictProba(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia,kc,pr_en,fats,carb,smoke):
+    data = np.array([[sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia,kc,pr_en,fats,carb,smoke]])
     return model.predict_proba(data)
 
-def predictDisease(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia):
-    data = np.array([[sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia]])
+def predictDisease(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia,kc,pr_en,fats,carb,smoke):
+    data = np.array([[sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia,kc,pr_en,fats,carb,smoke]])
     return model.predict(data)
 
 def load_model():
@@ -77,7 +77,7 @@ def classify_bmi(bmi_value):
 st.title('Прогнозирование гипертонии, ИБС и атеросклероза')
 
 
-st.subheader("Подсчёт ИМТ пациента")
+st.subheader("Подсчёт ИМТ пользователя")
 
 sex = st.number_input('Пол')
 age = st.number_input('Возраст')
@@ -110,7 +110,7 @@ if calculate_button:
     st.write(f"Классификация: {classification}")
 
 
-st.subheader("Введите параметры анализов пациента")
+st.subheader("Введите параметры анализов пользователя")
 
 alt = st.number_input('АЛТ, 1/л')
 ast = st.number_input('АСТ, 1/л')
@@ -125,61 +125,21 @@ tgr = st.number_input('Триглицериды, ммоль/л')
 holesterin = st.number_input('Общий холестерин, ммоль/л')
 ia = st.number_input('Индекс атерогенности')
 
-done = st.button('Вычислить риски')
-recomendation = st.button('Посмотреть рекомендации')
-rec = 0
+st.subheader("Введите информацию о питании пользователя")
+
+kc = st.number_input('Энергия, ккал')
+pr_en = st.number_input('Белки, г')
+fats = st.number_input('Жиры, г')
+carb = st.number_input('Углеводы, г')
+smoke = st.number_input('Употребляете ли вы табачные изделия?')
+
+done = st.button('Вычислить риски заболевания')
 # Кнопка для получения прогноза
 
-def printprof (disease):
-    result = ""
-    if disease == 0:
-        result += """ 
-        Профилактика гипертензии: 
-        1. Увеличение физической и двигательной нагрузки.
-        2. Отказ от курения: Табак и содержащийся в нем никотин способствуют спазму артерий. 
-        3. Отказ от употребления алкоголя.
-        4. Оптимизацию питания: ограничение суточного потребления поваренной соли, не досаливать пищу после готовки;
-        Наибольшее значение имеют такие факторы, как злоупотребление кофе, шоколадом и крепким чаем, употребление большого количества животных жиров и простых углеводов, 
-        регулярное потребление соленых блюд, переедание.
-        5. Коррекцию массы тела: калорийность пищи не должна быть высокой. Требуется употреблять пищу небольшими порциями. 
-        6. Соблюдение режима сна и бодрствования: ночной сон должен составлять 8-9 часов. 
-        7. Исключение стрессовых состояний. Стресс является пусковым фактором многих заболеваний.
-        8. В случае ощущений недомогания или ухудшения самочувствия, необходима консультация врача. """
-    elif disease == 1:
-        result +=  """
-        Профилактика атеросклероза:
-        1)Отказ от курения
-        2)Отказ от употребления алкоголя
-        3)Антиатеросклеротическая диета — например, «средиземноморская»: масло, богатое полиненасыщенными жирными кислотами (Омега-3): 
-        льняное, рапсовое или оливковое. 
-        Из алкоголя только столовое вино до 150 мл в день (но лучше полностью отказаться от алкоголя, так как он является фактором риска возникновения инсульта). 
-        Отказ от хлеба из муки высших сортов, ни дня без фруктов и овощей.
-        4)Активно-подвижный образ жизни — регулярные дозированные физические нагрузки.
-        5)Поддержание психологического и физического комфорта
-        6)Снижение и поддержание массы тела. """
-    elif disease == 2:
-        result += """
-        Профилактика ИБС:
-        1)правильное питание;
-        2)снижение в крови концентрации липопротеидов низкой плотности;
-        3)снижение в крови концентрации глюкозы;
-        4)поддержание нормальной массы тела;
-        5)снижение артериального давления;
-        6)избавление от вредных привычек;
-        7)повышение двигательной активности;
-        8)поддержание оптимального соотношения труда и отдыха."""
-    return result
-    
-if recomendation:
-    st.text (printprof(rec))
-
 if done:
-    result = predictProba(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia)
-    rec = predictDisease(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia)
-    string = "Риск гипертонии равен "+ str(result[0][0] * 100)  +  "%\n" + "Риск ИБС равен "+ str(result[0][1] * 100)  +  "%\n" +"Риск атеросклероза равен "+ str(result[0][2] * 100) +  "%\n" #  +"Пациент с вероятностью "+ str(result[0][3] * 100)  +  "% здоров\n"
+    result = predictProba(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia,kc,pr_en,fats,carb,smoke)
+    str = "Риск гипертонии равен "+ str(result[0][0] * 100)  +  "%\n" + "Риск ИБС равен "+ str(result[0][1] * 100)  +  "%\n" +"Риск атеросклероза равен "+ str(result[0][2] * 100) +  "%\n" #  +"Пациент с вероятностью "+ str(result[0][3] * 100)  +  "% здоров\n"
     if result is None:
         st.error("Не удалось рассчитать.")
     else:
-        st.text(string)
-
-
+        st.text(str)
