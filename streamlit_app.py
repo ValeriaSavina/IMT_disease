@@ -55,32 +55,32 @@ def calculate_bmi(weight, height):
     try:
         return round(weight / (height / 100) ** 2, 2)
     except ZeroDivisionError:
-        print(f"Ошибка: Рост равен 0 для строки {weight}, {height}")
+        print(f"Error: Height is 0 for row {weight}, {height}")
         return None
 
 def classify_bmi(bmi_value):
     if bmi_value is None:
-        return 'Недопределено'
+        return 'Undefined'
     elif bmi_value < 18.5:
-        return 'Недостаточный'
+        return 'Inadequate'
     elif bmi_value < 25:
         return 'Нормальный'
     elif bmi_value < 30:
-        return 'Избыточный вес'
+        return 'Overweight'
     elif bmi_value < 35:
-        return 'Ожирение I степени'
+        return 'Obesity stage I'
     elif bmi_value < 40:
-        return 'Ожирение II степени'
+        return 'Obesity stage II'
     else:
-        return 'Ожирение III степени'
+        return 'Obesity stage III'
 
-st.title('Прогнозирование гипертонии, ИБС и атеросклероза')
+st.title('Prediction of hypertension, coronary heart disease and atherosclerosis')
 
 
-st.subheader("Подсчёт ИМТ пользователя")
+st.subheader("Calculate user's BMI")
 
-sex = st.number_input('Пол')
-age = st.number_input('Возраст')
+sex = st.number_input('Sex')
+age = st.number_input('Age')
 bmi = 0
 imt = ""
 
@@ -99,47 +99,47 @@ if calculate_button:
     bmi_result = calculate_bmi(weight_input, height_input)
 
     if bmi_result is None:
-        st.error("Не удалось рассчитать ИМТ. Проверьте введенные данные.")
+        st.error("Failed to calculate BMI. Please check your entered data.")
     else:
-        st.write(f"Ваш ИМТ: {bmi_result:.2f}")
+        st.write(f"Your BMI: {bmi_result:.2f}")
 
     # Отображаем классификацию по ИМТ
     classification = classify_bmi(bmi_result)
     imt = classification
     bmi = bmi_result
-    st.write(f"Классификация: {classification}")
+    st.write(f"Classification: {classification}")
 
 
-st.subheader("Введите параметры анализов пользователя")
+st.subheader("Enter user analysis parameters")
 
-alt = st.number_input('АЛТ, 1/л')
-ast = st.number_input('АСТ, 1/л')
-bil_ob = st.number_input('Билирубин общий, мкмоль/л')
-bil_pr = st.number_input('Билирубин прямой (связанный), мкмоль/л')
-glucose = st.number_input('Глюкоза, ммоль/л')
-kreatinin = st.number_input('Креатинин, мкмоль/л')
-lpnp = st.number_input('ЛПНП, ммоль/л')
-lpvp = st.number_input('ЛПВП, ммоль/л')
-protein = st.number_input('Белок общий, г/л')
-tgr = st.number_input('Триглицериды, ммоль/л')
-holesterin = st.number_input('Общий холестерин, ммоль/л')
-ia = st.number_input('Индекс атерогенности')
+alt = st.number_input('ALT, 1/l')
+ast = st.number_input('AST, 1/l')
+bil_ob = st.number_input('Total bilirubin, mmol/l')
+bil_pr = st.number_input('Direct (conjugated) bilirubin, mmol/l')
+glucose = st.number_input('Glucose, mmol/l')
+kreatinin = st.number_input('Creatinine, mmol/l')
+lpnp = st.number_input('LDL, mmol/l')
+lpvp = st.number_input('HDL, mmol/l')
+protein = st.number_input('Total protein, g/l')
+tgr = st.number_input('Triglycerides, mmol/l')
+holesterin = st.number_input('Total cholesterol, mmol/l')
+ia = st.number_input('Atherogenicity index')
 
-st.subheader("Введите информацию о питании пользователя")
+st.subheader("Enter user nutrition information")
 
-kc = st.number_input('Энергия, ккал')
-pr_en = st.number_input('Белки, г')
-fats = st.number_input('Жиры, г')
-carb = st.number_input('Углеводы, г')
-smoke = st.number_input('Употребляете ли вы табачные изделия?')
+kc = st.number_input('Energy, kcal')
+pr_en = st.number_input('Proteins, g')
+fats = st.number_input('Fats, g')
+carb = st.number_input('Carbohydrates, g')
+smoke = st.number_input('Do you use tobacco products?')
 
-done = st.button('Вычислить риски заболевания')
+done = st.button('Calculate the risks of disease')
 # Кнопка для получения прогноза
 
 if done:
     result = predictProba(sex,age,height_input,weight_input,bmi,alt,ast,bil_ob,bil_pr,glucose,kreatinin,lpnp,lpvp,protein,tgr,holesterin,ia,kc,pr_en,fats,carb,smoke)
-    str = "Риск гипертонии равен "+ str(result[0][0] * 100)  +  "%\n" + "Риск ИБС равен "+ str(result[0][1] * 100)  +  "%\n" +"Риск атеросклероза равен "+ str(result[0][2] * 100) +  "%\n" #  +"Пациент с вероятностью "+ str(result[0][3] * 100)  +  "% здоров\n"
+    str = "The risk of hypertension is "+ str(result[0][0] * 100)  +  "%\n" + "The risk of coronary heart disease is "+ str(result[0][1] * 100)  +  "%\n" +"The risk of atherosclerosis is equal to "+ str(result[0][2] * 100) +  "%\n" #  +"The patient is likely "+ str(result[0][3] * 100)  +  "% healthy\n"
     if result is None:
-        st.error("Не удалось рассчитать.")
+        st.error("Failed to calculate.")
     else:
         st.text(str)
